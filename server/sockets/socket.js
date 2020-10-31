@@ -1,42 +1,23 @@
 const { io } = require('../server');
 
+const Usuarios = require('../classes/usuarios');
+
+const usuarios = new Usuarios();
 
 io.on('connection', (client) => {
 
-    console.log('Usuario conectado');
+	client.on('entrarChat', (user, callback) => {
 
-    client.emit('enviarMensaje', {
-        usuario: 'Administrador',
-        mensaje: 'Bienvenido a esta aplicación'
-    });
+		if (!user.nombre) {
+			return callback({
+				err: true,
+				msg: "El nombre es necesario"
+			});
+		}
+		let todos = usuarios.agregarPersona(client.id, user.nombre);
+		return callback(todos);
+	})
 
-
-
-    client.on('disconnect', () => {
-        console.log('Usuario desconectado');
-    });
-
-    // Escuchar el cliente
-    client.on('enviarMensaje', (data, callback) => {
-
-        console.log(data);
-
-        client.broadcast.emit('enviarMensaje', data);
-
-
-        // if (mensaje.usuario) {
-        //     callback({
-        //         resp: 'TODO SALIO BIEN!'
-        //     });
-
-        // } else {
-        //     callback({
-        //         resp: 'TODO SALIO MAL!!!!!!!!'
-        //     });
-        // }
-
-
-
-    });
 
 });
+
