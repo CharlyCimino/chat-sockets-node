@@ -34,5 +34,17 @@ io.on('connection', (client) => {
 		client.broadcast.emit('crearMensaje', mensaje);
 	})
 
+	client.on('mensajePrivado', (data, callback) => {
+		if (!data.receptor) {
+			return callback({
+				err: true,
+				msg: "El nombre es necesario"
+			})
+		}
+		let persona = usuarios.getPersona(client.id);
+		let mensaje = crearMensaje(persona.nombre, data.mensaje);
+		client.broadcast.to(data.receptor).emit('mensajePrivado', mensaje);
+	})
+
 });
 
